@@ -1,19 +1,20 @@
 #include "catch2/catch.h"
 
+#include <array>
+
 #include "entity/Entity.h"
 #include "entity/components/PassabilityComponent.h"
 #include "entity/components/WalkerComponent.h"
 #include "game/Pathfinding.h"
 #include "game/World.h"
 #include "utils/TimeUtils.h"
-#include <array>
 
 using namespace Rival;
 
 namespace TestWalkerComponent {
 
 SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
-{     
+{
 
     GIVEN("A unit with a WalkerComponent")
     {
@@ -37,7 +38,7 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
             }
         }
     }
-    
+
     GIVEN("A unit with a WalkerComponent in an enclosed space")
     {
         World world(6, 6, false);
@@ -69,7 +70,7 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
             }
         }
     }
-    
+
     GIVEN("A unit with a WalkerComponent positioned in the corner of a large map")
     {
         World largeWorld(1001, 1001, false);
@@ -79,7 +80,7 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
 
         WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
 
-        WHEN("Trying to pathfind to the opposite corner") 
+        WHEN("Trying to pathfind to the opposite corner")
         {
             Pathfinding::Context context;
             walkerComponent->moveTo({ 1000, 1000 }, context);
@@ -92,8 +93,8 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
             }
         }
     }
-    
-    GIVEN("Two 2 units with WalkerComponents trying to move into the same tile")
+
+    GIVEN("Two units with WalkerComponents trying to move into the same tile")
     {
         World world(5, 5, false);
         Entity e1(EntityType::Unit, 1, 1);
@@ -125,7 +126,7 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
             {
                 walkerComponent2->update();
             }
-            
+
             THEN("one unit has moved into the tile and the other has stayed put")
             {
                 REQUIRE(!walkerComponent1->getMovement().isValid());
@@ -135,10 +136,10 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
                 REQUIRE((world.getPassability({ 1, 1 }) == TilePassability::Clear
                         || world.getPassability({ 2, 2 }) == TilePassability::Clear));
                 REQUIRE((world.getPassability({ 1, 1 }) == TilePassability::GroundUnit
-                        || world.getPassability({ 2, 2 }) == TilePassability::GroundUnit));              
-            }            
+                        || world.getPassability({ 2, 2 }) == TilePassability::GroundUnit));
+            }
         }
-    }      
+    }
 }
 
 SCENARIO("WalkerComponent can move a unit according to its route", "[components][movement-component]")
