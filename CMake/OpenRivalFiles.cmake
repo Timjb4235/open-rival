@@ -16,13 +16,17 @@ set(OPEN_RIVAL_SOURCES
     ${OPEN_RIVAL_DIR}/src/commands/GameCommand.cpp
     ${OPEN_RIVAL_DIR}/src/commands/GameCommandFactory.cpp
     ${OPEN_RIVAL_DIR}/src/commands/MoveCommand.cpp
+    ${OPEN_RIVAL_DIR}/src/entity/Building.cpp
+    ${OPEN_RIVAL_DIR}/src/entity/Decoration.cpp
     ${OPEN_RIVAL_DIR}/src/entity/Entity.cpp
     ${OPEN_RIVAL_DIR}/src/entity/EntityFactory.cpp
+    ${OPEN_RIVAL_DIR}/src/entity/Palisade.cpp
+    ${OPEN_RIVAL_DIR}/src/entity/Unit.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/BuildingAnimationComponent.cpp
-    ${OPEN_RIVAL_DIR}/src/entity/components/BuildingPropsComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/EntityComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/FacingComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/FlyerComponent.cpp
+    ${OPEN_RIVAL_DIR}/src/entity/components/HealthComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/MouseHandlerComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/MovementComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/MovementListener.cpp
@@ -32,12 +36,10 @@ set(OPEN_RIVAL_SOURCES
     ${OPEN_RIVAL_DIR}/src/entity/components/SeafarerComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/SpriteComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/UnitAnimationComponent.cpp
-    ${OPEN_RIVAL_DIR}/src/entity/components/UnitPropsComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/VoiceComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/WalkerComponent.cpp
     ${OPEN_RIVAL_DIR}/src/entity/components/WallComponent.cpp
     ${OPEN_RIVAL_DIR}/src/game/Animations.cpp
-    ${OPEN_RIVAL_DIR}/src/game/Building.cpp
     ${OPEN_RIVAL_DIR}/src/game/BuildingDef.cpp
     ${OPEN_RIVAL_DIR}/src/game/GameInterface.cpp
     ${OPEN_RIVAL_DIR}/src/game/GameState.cpp
@@ -71,6 +73,7 @@ set(OPEN_RIVAL_SOURCES
     ${OPEN_RIVAL_DIR}/src/gfx/renderable/TextRenderable.cpp
     ${OPEN_RIVAL_DIR}/src/gfx/renderable/TextureRenderable.cpp
     ${OPEN_RIVAL_DIR}/src/gfx/renderer/DragSelectRenderer.cpp
+    ${OPEN_RIVAL_DIR}/src/gfx/renderer/EntityOverlayRenderer.cpp
     ${OPEN_RIVAL_DIR}/src/gfx/renderer/EntityRenderer.cpp
     ${OPEN_RIVAL_DIR}/src/gfx/renderer/FramebufferRenderer.cpp
     ${OPEN_RIVAL_DIR}/src/gfx/renderer/GameRenderer.cpp
@@ -145,13 +148,17 @@ set(OPEN_RIVAL_HEADERS
     ${OPEN_RIVAL_DIR}/include/commands/GameCommand.h
     ${OPEN_RIVAL_DIR}/include/commands/GameCommandFactory.h
     ${OPEN_RIVAL_DIR}/include/commands/MoveCommand.h
+    ${OPEN_RIVAL_DIR}/include/entity/Building.h
+    ${OPEN_RIVAL_DIR}/include/entity/Decoration.h
     ${OPEN_RIVAL_DIR}/include/entity/Entity.h
     ${OPEN_RIVAL_DIR}/include/entity/EntityFactory.h
+    ${OPEN_RIVAL_DIR}/include/entity/Palisade.h
+    ${OPEN_RIVAL_DIR}/include/entity/Unit.h
     ${OPEN_RIVAL_DIR}/include/entity/components/BuildingAnimationComponent.h
-    ${OPEN_RIVAL_DIR}/include/entity/components/BuildingPropsComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/EntityComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/FacingComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/FlyerComponent.h
+    ${OPEN_RIVAL_DIR}/include/entity/components/HealthComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/MouseHandlerComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/MovementComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/MovementListener.h
@@ -161,13 +168,12 @@ set(OPEN_RIVAL_HEADERS
     ${OPEN_RIVAL_DIR}/include/entity/components/SeafarerComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/SpriteComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/UnitAnimationComponent.h
-    ${OPEN_RIVAL_DIR}/include/entity/components/UnitPropsComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/VoiceComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/WalkerComponent.h
     ${OPEN_RIVAL_DIR}/include/entity/components/WallComponent.h
     ${OPEN_RIVAL_DIR}/include/game/Animations.h
-    ${OPEN_RIVAL_DIR}/include/game/Building.h
     ${OPEN_RIVAL_DIR}/include/game/BuildingDef.h
+    ${OPEN_RIVAL_DIR}/include/game/BuildingType.h
     ${OPEN_RIVAL_DIR}/include/game/GameInterface.h
     ${OPEN_RIVAL_DIR}/include/game/GameState.h
     ${OPEN_RIVAL_DIR}/include/game/InventoryComponent.h
@@ -179,8 +185,8 @@ set(OPEN_RIVAL_HEADERS
     ${OPEN_RIVAL_DIR}/include/game/PlayerState.h
     ${OPEN_RIVAL_DIR}/include/game/Race.h
     ${OPEN_RIVAL_DIR}/include/game/Tile.h
-    ${OPEN_RIVAL_DIR}/include/game/Unit.h
     ${OPEN_RIVAL_DIR}/include/game/UnitDef.h
+    ${OPEN_RIVAL_DIR}/include/game/UnitType.h
     ${OPEN_RIVAL_DIR}/include/game/World.h
     ${OPEN_RIVAL_DIR}/include/gfx/Camera.h
     ${OPEN_RIVAL_DIR}/include/gfx/Color.h
@@ -203,6 +209,7 @@ set(OPEN_RIVAL_HEADERS
     ${OPEN_RIVAL_DIR}/include/gfx/renderable/TextRenderable.h
     ${OPEN_RIVAL_DIR}/include/gfx/renderable/TextureRenderable.h
     ${OPEN_RIVAL_DIR}/include/gfx/renderer/DragSelectRenderer.h
+    ${OPEN_RIVAL_DIR}/include/gfx/renderer/EntityOverlayRenderer.h
     ${OPEN_RIVAL_DIR}/include/gfx/renderer/EntityRenderer.h
     ${OPEN_RIVAL_DIR}/include/gfx/renderer/FramebufferRenderer.h
     ${OPEN_RIVAL_DIR}/include/gfx/renderer/GameRenderer.h

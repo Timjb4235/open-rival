@@ -3,13 +3,13 @@
 #include <glm/vec2.hpp>
 
 #include <memory>
+#include <set>
 
 #include "commands/MoveCommand.h"
 #include "entity/Entity.h"
 #include "entity/components/MovementComponent.h"
 #include "entity/components/OwnerComponent.h"
 #include "entity/components/SpriteComponent.h"
-#include "entity/components/UnitPropsComponent.h"
 #include "entity/components/VoiceComponent.h"
 #include "game/PlayerContext.h"
 #include "gfx/renderer/EntityRenderer.h"
@@ -23,7 +23,7 @@ MouseHandlerComponent::MouseHandlerComponent()
 {
 }
 
-void MouseHandlerComponent::onEntitySpawned(World*)
+void MouseHandlerComponent::onEntityAddedToWorld(World*)
 {
     weakMovementComponent = entity->requireComponentWeak<MovementComponent>(MovementComponent::key);
     if (auto movementComponent = weakMovementComponent.lock())
@@ -37,7 +37,7 @@ void MouseHandlerComponent::onEntitySpawned(World*)
     weakVoiceComponent = entity->getComponentWeak<VoiceComponent>(VoiceComponent::key);
 }
 
-void MouseHandlerComponent::onDelete()
+void MouseHandlerComponent::destroy()
 {
     if (auto movementComponent = weakMovementComponent.lock())
     {
@@ -132,18 +132,11 @@ bool MouseHandlerComponent::onTileClicked(
         }
 
         // Find all entity IDs in the selection
-        std::vector<int> entityIdsInGroup;
-        for (const auto& weakSelectedEntity : playerContext.weakSelectedEntities)
-        {
-            const auto& selectedEntity = weakSelectedEntity.lock();
-            if (selectedEntity)
-            {
-                entityIdsInGroup.push_back(selectedEntity->getId());
-            }
-        }
+        std::set<int> entityIdsSet = playerContext.getSelectedEntityIds();
+        std::vector<int> entityIdsVector(entityIdsSet.cbegin(), entityIdsSet.cend());
 
         // Issue the MoveCommand
-        cmdInvoker.dispatchCommand(std::make_shared<MoveCommand>(entityIdsInGroup, playerContext.tileUnderMouse));
+        cmdInvoker.dispatchCommand(std::make_shared<MoveCommand>(entityIdsVector, playerContext.tileUnderMouse));
         return true;
     }
 

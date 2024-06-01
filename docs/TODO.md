@@ -4,9 +4,6 @@
 ## Combat Milestone
 <!----------------------------------------------------------------------------->
 
-- Create subclasses of Entity, e.g. Unit, Building, Container instead of using *PropsComponent to store basic properties
-- Create HealthComponent
-- Render health bars of selected units
 - Show attack cursor when hovering over enemy-owned entities
 - Show attack cursor after entering attack mode (press A)
 - Issue an AttackCommand when the selection is instructed to attack
@@ -14,13 +11,15 @@
 - Units instructed to attack should move to the target
 - Units instructed to attack should update their route as the target moves
 - Units instructed to attack should play their attack animation when in range
+- Play a sound when an attack hits
+- Damage target when an attack hits
+    - Need to figure out damage calculation!
 
 <!----------------------------------------------------------------------------->
 ## Bugs
 <!----------------------------------------------------------------------------->
 
-### Game
-
+- Lag spike when trying to move onto a wall
 - Some animations need attention (e.g. Snake)
 - "Vehicles" should not have an inventory
 - Zooming in does not zoom towards the cursor as much as it should
@@ -31,10 +30,6 @@
 - Crash when closing game window (sometimes) (OpenAL32.dll)
 - Pathfinding lags the game when moving very large groups of units
 
-### Setup
-
-- objects_meadow.tga cannot be opened in Photoshop (invalid file format)
-
 <!----------------------------------------------------------------------------->
 ## Features
 <!----------------------------------------------------------------------------->
@@ -42,7 +37,6 @@
 ### General
 
 - Add support for [Unicode filenames](http://utf8everywhere.org/)
-- Redirect stdout to log file
 - Save config.json / log files to AppData (or at least provide the option)
 
 ### Data Loading
@@ -58,20 +52,25 @@
 ### Gameplay
 
 - Store unit / building defaults
-- Mountains
-- Trees
-- Scenery
-- Chests
-- Info Points
-- Doors
+- Load map elements
+    - Mountains
+    - Trees
+    - Scenery
+    - Chests
+    - Info Points
+    - Doors
 - Building placement
-- Training
-- Resting
-- Attacking
+- Resource gathering
+- Training units
+- Resting (approx. 200 health in 30 seconds)
+- Don't kill friendly units when attacking them!
+- Prisoners & mercenaries
 - Upgrades
-- Experience
-- Food
+    - Overlay background gets taller for hovered units with upgrades
+    - Upgrade rectangles use 0xffffff for top/left edge, 0x616161 for bottom/right edge and 0xa2a2a2 in the middle
+- Food consumption
 - Items
+- Experience & levelling
 - Spells
 - Effects (e.g. corpses / explosions)
 - Monster AI
@@ -80,7 +79,9 @@
 ### Multiplayer
 
 - Adjust net command delay dynamically based on ping
-- Send a checksum periodically to check that players are in-sync?
+    - If delay gets increased, clients should send empty commands for any "skipped" ticks
+    - If delay gets reduced, clients keep issuing commands for the next tick that was due, until the "current" tick catches up
+- Send a checksum periodically to check that players are in-sync? (debug mode only)
 - GameState should reject new players
 - Create standalone project to run dedicated server
 
@@ -102,10 +103,11 @@
     - We should support 2 options:
         - Vanilla: Uses premade bitmaps with no translucency
         - Smooth: The current implementation
-- Include shareware version of Procopius?
 
 ### Rendering
 
+- Units with more than 2 bars should display a plus sign in their overlay
+- Health bars should be rendered higher for flying units
 - Respect monster color
 - Render interface
     - Resource icons
@@ -123,7 +125,6 @@
 
 - Selected units should flash orange
 - Allow buildings to be selected
-- Use a single MoveCommand for groups?
 - Show "star" effect when sending troops somewhere
 - Passability debug visualisation
 - Pathfinding debug visualisation
@@ -155,8 +156,7 @@
 
 ### Menus
 
-- Gold cursor in menus
-    - We may need to create new cursor images for this since the existing ones all use the wrong palette
+- Use gold cursor in menus
 - Main menu
 - Loading screen
 - Custom Map menu
@@ -196,6 +196,10 @@
 - [x] High-res fonts
 - [ ] Allow troops to stop moving if they are dying to traps
 - [ ] Repairing allied siege units
+- [x] Remove 25-unit limit for selections
+
+### Graphics
+
 - [ ] Translucent unit shadows (instead of solid black)
 - [ ] Real translucency for fog of war
 - [ ] Upscale graphics / videos using AI?
@@ -209,7 +213,7 @@
 - [ ] Show map preview / description
 - [ ] More endgame stats
 - [ ] Show additional unit stats (speed, hit speed, etc.)
-- [ ] Hover states for buttons#
+- [ ] Hover states for buttons
 - [ ] Scroll wheel support for lists
 
 ### Balance
@@ -220,7 +224,7 @@
 - [ ] Affordable Wall
 - [ ] Non-suicidal peasants (don't go looking for gold)
 - [ ] Rebalance abilities (Frozen Breath, Capture)
-- [ ] Disable friendly fire
+- [ ] Disable friendly fire from ranged attacks
 
 ### New Features
 
@@ -243,7 +247,6 @@
 
 ### General
 
-- Commit upscaled video files (Git LFS)
 - Consider moving some docs to GitHub wiki
 - Consider replacing SDL with GLFW
     - Replace SDL_image with stb_image? (this is what it uses internally)
@@ -254,20 +257,14 @@
 ### CMake
 
 - Make some settings common to all projects (e.g. Unicode)
-- Add shaders to project
-- Why do additional library directies also have a `/$(Configuration)` variant?
+- Why do additional library directories also have a `/$(Configuration)` variant?
 - Include libraries in a better way
     - https://stackoverflow.com/a/61708554/1624459
     - https://github.com/g-truc/glm/blob/master/manual.md#-15-finding-glm-with-cmake
-- Copy required files to build directory automatically (`build\x64\projects\Open-Rival`)
-    - DLLs
-    - `res` folder
-    - `config.json`
-    - `args.json` (if present)
-    - `vcxproj.user` (if present)
 - Copy required files to setup build directory automatically (`build\x64\projects\setup`)
     - `setup` folder
     - `res` folder also needs to exist!
+- Resources, DLLs, config file, etc. are not checked for changes when running ZERO_CHECK
 - Use auto formatter: https://github.com/cheshirekow/cmake_format
 - Code review suggestions: https://codereview.stackexchange.com/questions/286277/a-slightly-unconventional-cmake-project
 - Document CMake options
@@ -332,6 +329,7 @@
 - Defer loading MIDI files until needed to speed up initial load time
 - Eliminate branching in shaders
 - Revise `World::getEntityAt` to use a map or spartial partitioning
+- AtlasRenderables always use a z co-ordinate even though it is often not needed (e.g. UI, overlays)
 
 ### Portability
 
@@ -388,6 +386,9 @@
 - LobbyState's mechanism for passing unprocessed packets back to the connection is hacky
     - Connection could store receivedPackets instead, and return an iterator
 - GameState should expose an iterator instead of making a copy of the entity list in getEntities
+- Provide an easier way to get components that are guaranteed to exist for a Unit
+- Revise usages of weakThis in EntityComponents (use std::enable_shared_from_this<EntityComponent>)
+- Some properties (e.g. Name) should be shared by Units and Buildings (create a struct?)
 
 #### Rendering
 

@@ -1,8 +1,6 @@
 #include "catch2/catch.h"
 
-#include <array>
-
-#include "entity/Entity.h"
+#include "entity/Unit.h"
 #include "entity/components/PassabilityComponent.h"
 #include "entity/components/WalkerComponent.h"
 #include "game/Pathfinding.h"
@@ -19,11 +17,11 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
     GIVEN("A unit with a WalkerComponent")
     {
         World world(5, 5, false);
-        Entity e(EntityType::Unit, 1, 1);
-        e.attach(std::make_shared<WalkerComponent>());
-        e.onSpawn(&world, 0, { 1, 1 });
+        std::shared_ptr<Unit> e = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e->attach(std::make_shared<WalkerComponent>());
+        e->addedToWorld(&world, 0, { 1, 1 });
 
-        WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent = e->requireComponent<WalkerComponent>(WalkerComponent::key);
 
         WHEN("trying to plan a route to a reachable tile")
         {
@@ -42,11 +40,11 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
     GIVEN("A unit with a WalkerComponent in an enclosed space")
     {
         World world(6, 6, false);
-        Entity e(EntityType::Unit, 1, 1);
-        e.attach(std::make_shared<WalkerComponent>());
-        e.onSpawn(&world, 0, { 3, 2 });
+        std::shared_ptr<Unit> e = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e->attach(std::make_shared<WalkerComponent>());
+        e->addedToWorld(&world, 0, { 3, 2 });
 
-        WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent = e->requireComponent<WalkerComponent>(WalkerComponent::key);
 
         const std::array<MapNode, 10> enclosure = {
             { { 1, 2 }, { 2, 2 }, { 3, 1 }, { 4, 1 }, { 2, 3 }, { 5, 1 }, { 3, 3 }, { 4, 3 }, { 5, 2 }, { 6, 2 } }
@@ -74,11 +72,11 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
     GIVEN("A unit with a WalkerComponent positioned in the corner of a large map")
     {
         World largeWorld(1001, 1001, false);
-        Entity e(EntityType::Unit, 1, 1);
-        e.attach(std::make_shared<WalkerComponent>());
-        e.onSpawn(&largeWorld, 0, { 1, 1 });
+        std::shared_ptr<Unit> e = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e->attach(std::make_shared<WalkerComponent>());
+        e->addedToWorld(&largeWorld, 0, { 1, 1 });
 
-        WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent = e->requireComponent<WalkerComponent>(WalkerComponent::key);
 
         WHEN("Trying to pathfind to the opposite corner")
         {
@@ -97,17 +95,17 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
     GIVEN("Two units with WalkerComponents trying to move into the same tile")
     {
         World world(5, 5, false);
-        Entity e1(EntityType::Unit, 1, 1);
-        e1.attach(std::make_shared<WalkerComponent>());
-        e1.attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
-        e1.onSpawn(&world, 0, { 1, 1 });
-        Entity e2(EntityType::Unit, 1, 1);
-        e2.attach(std::make_shared<WalkerComponent>());
-        e2.attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
-        e2.onSpawn(&world, 1, { 2, 2 });
+        std::shared_ptr<Unit> e1 = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e1->attach(std::make_shared<WalkerComponent>());
+        e1->attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
+        e1->addedToWorld(&world, 0, { 1, 1 });
+        std::shared_ptr<Unit> e2 = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e2->attach(std::make_shared<WalkerComponent>());
+        e2->attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
+        e2->addedToWorld(&world, 1, { 2, 2 });
 
-        WalkerComponent* walkerComponent1 = e1.requireComponent<WalkerComponent>(WalkerComponent::key);
-        WalkerComponent* walkerComponent2 = e2.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent1 = e1->requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent2 = e2->requireComponent<WalkerComponent>(WalkerComponent::key);
 
         WHEN("their WalkerComponents are updated to completion")
         {
@@ -131,7 +129,7 @@ SCENARIO("WalkerComponent can plan a route", "[components][movement-component]")
             {
                 REQUIRE(!walkerComponent1->getMovement().isValid());
                 REQUIRE(!walkerComponent2->getMovement().isValid());
-                REQUIRE((e1.getPos() == destination || e2.getPos() == destination));
+                REQUIRE((e1->getPos() == destination || e2->getPos() == destination));
                 REQUIRE(world.getPassability(destination) == TilePassability::GroundUnit);
                 REQUIRE((world.getPassability({ 1, 1 }) == TilePassability::Clear
                         || world.getPassability({ 2, 2 }) == TilePassability::Clear));
@@ -148,11 +146,11 @@ SCENARIO("WalkerComponent can move a unit according to its route", "[components]
 
     GIVEN("A unit with a WalkerComponent and a planned route that is unobstructed")
     {
-        Entity e(EntityType::Unit, 1, 1);
-        e.attach(std::make_shared<WalkerComponent>());
-        e.onSpawn(&world, 0, { 1, 1 });
+        std::shared_ptr<Unit> e = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e->attach(std::make_shared<WalkerComponent>());
+        e->addedToWorld(&world, 0, { 1, 1 });
 
-        WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent = e->requireComponent<WalkerComponent>(WalkerComponent::key);
         const MapNode destination = { 1, 2 };
         Pathfinding::Context context;
         walkerComponent->moveTo(destination, context);
@@ -186,7 +184,7 @@ SCENARIO("WalkerComponent can move a unit according to its route", "[components]
             THEN("the unit reaches the destination")
             {
                 REQUIRE(!walkerComponent->getMovement().isValid());
-                REQUIRE(e.getPos() == destination);
+                REQUIRE(e->getPos() == destination);
             }
 
             THEN("the passability of the tiles is updated")
@@ -199,21 +197,21 @@ SCENARIO("WalkerComponent can move a unit according to its route", "[components]
 
     GIVEN("A unit with a WalkerComponent and a planned route that is now obstructed")
     {
-        Entity e(EntityType::Unit, 1, 1);
-        e.attach(std::make_shared<WalkerComponent>());
-        e.attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
-        e.onSpawn(&world, 0, { 1, 1 });
+        std::shared_ptr<Unit> e = std::make_shared<Unit>(UnitType::Knight, "", false);
+        e->attach(std::make_shared<WalkerComponent>());
+        e->attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
+        e->addedToWorld(&world, 0, { 1, 1 });
 
         // Plan a route
-        WalkerComponent* walkerComponent = e.requireComponent<WalkerComponent>(WalkerComponent::key);
+        WalkerComponent* walkerComponent = e->requireComponent<WalkerComponent>(WalkerComponent::key);
         const MapNode destination = { 1, 2 };
         Pathfinding::Context context;
         walkerComponent->moveTo(destination, context);
 
         // Spawn an obstruction
-        Entity obstruction(EntityType::Unit, 1, 1);
+        Unit obstruction(UnitType::Knight, "", false);
         obstruction.attach(std::make_shared<PassabilityComponent>(TilePassability::GroundUnit));
-        obstruction.onSpawn(&world, 0, { 1, 2 });
+        obstruction.addedToWorld(&world, 0, { 1, 2 });
 
         WHEN("the WalkerComponent is updated")
         {

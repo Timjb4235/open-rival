@@ -48,8 +48,8 @@ public:
     virtual ~World() = default;
 
     // Begin EntityContainer override
-    void forEachMutableEntity(std::function<void(std::shared_ptr<Entity>)> func) override;
-    void forEachEntity(std::function<void(std::shared_ptr<const Entity>)> func) const override;
+    void forEachMutableEntity(const std::function<void(std::shared_ptr<Entity>)>& func) override;
+    void forEachEntity(const std::function<void(std::shared_ptr<const Entity>)>& func) const override;
     // End EntityContainer override
 
     // Begin PathfindingMap override
@@ -148,7 +148,7 @@ public:
     std::shared_ptr<const Entity> getEntityShared(int id) const;
 
     /**
-     * Gets a shared pointer to the Entity with the given key (mutable version).
+     * Gets a weak pointer to the Entity with the given key (mutable version).
      *
      * Returns an empty weak_ptr if the Entity is not found.
      */

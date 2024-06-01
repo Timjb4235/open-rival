@@ -2,6 +2,11 @@
 
 #pragma warning(push)
 #pragma warning(disable : 6285 26437 26450 26451 26495 26498 26800)
+
+/* Spdlog uses deprecated functions.
+Silence warnings until a fix is released. */
+#define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+
 #include <spdlog/spdlog.h>
 #pragma warning(pop)
 
